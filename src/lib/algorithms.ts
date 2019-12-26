@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 import pMap from 'p-map'
 import {
   userLikedSetKey,
@@ -69,7 +67,7 @@ export const updateSimilarityFor = async function(
   // if they have rated anything
   if (userRatedItemIds.length > 0) {
     // creating a list of redis keys to look up all of the likes and dislikes for a given set of items
-    itemLikeDislikeKeys = _(userRatedItemIds)
+    itemLikeDislikeKeys = userRatedItemIds
       .map(function(itemId) {
         // key for that item being liked
         const itemLiked = itemLikedBySetKey(className, itemId)
@@ -78,8 +76,7 @@ export const updateSimilarityFor = async function(
         // returning an array of those keys
         return [itemLiked, itemDisliked]
       })
-      .flatten()
-      .value()
+      .flat()
   }
   // flattening the array of all the likes/dislikes for the items a user rated
   // itemLikeDislikeKeys = _.flatten(itemLikeDislikeKeys);
@@ -187,12 +184,12 @@ export const updateRecommendationsFor = async function(
     nearestNeighbors - 1
   )
   // iterate through the user ids to create the redis keys for all those users likes
-  _.each(mostSimilarUserIds, function(usrId) {
+  mostSimilarUserIds.forEach(function(usrId) {
     setsToUnion.push(userLikedSetKey(className, usrId))
   })
   // if you want to factor in the least similar least likes, you change this in config
   // left it off because it was recommending items that every disliked universally
-  _.each(leastSimilarUserIds, function(usrId) {
+  leastSimilarUserIds.forEach(function(usrId) {
     setsToUnion.push(userDislikedSetKey(className, usrId))
   })
   // if there is at least one set in the array, continue
