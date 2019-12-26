@@ -1,6 +1,6 @@
 import config from './config'
 import _ from 'lodash'
-import Key from './key'
+import * as Key from './key'
 import client from './client'
 
 import pMap from 'p-map'

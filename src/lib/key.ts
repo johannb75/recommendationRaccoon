@@ -3,69 +3,46 @@ import config from './config'
 const USER = 'user'
 const ITEM = 'item'
 
-export class Key {
-  key: string
-  keyArr: string[]
-  constructor() {
-    this.key = ''
-    this.keyArr = []
-  }
-
-  joinKey() {
-    this.key = [config.className].concat(this.keyArr).join(':')
-    return this.key
-  }
-
-  userLikedSet(userId: string) {
-    this.keyArr = [USER, userId, 'liked']
-    return this.joinKey()
-  }
-
-  userDislikedSet(userId: string) {
-    this.keyArr = [USER, userId, 'disliked']
-    return this.joinKey()
-  }
-
-  itemLikedBySet(itemId: string) {
-    this.keyArr = [ITEM, itemId, 'liked']
-    return this.joinKey()
-  }
-
-  itemDislikedBySet(itemId: string) {
-    this.keyArr = [ITEM, itemId, 'disliked']
-    return this.joinKey()
-  }
-
-  mostLiked() {
-    this.keyArr = ['mostLiked']
-    return this.joinKey()
-  }
-
-  mostDisliked() {
-    this.keyArr = ['mostDisliked']
-    return this.joinKey()
-  }
-
-  recommendedZSet(userId: string) {
-    this.keyArr = [USER, userId, 'recommendedZSet']
-    return this.joinKey()
-  }
-
-  scoreboardZSet() {
-    this.keyArr = ['scoreboard']
-    return this.joinKey()
-  }
-
-  similarityZSet(userId: string) {
-    this.keyArr = [USER, userId, 'similarityZSet']
-    return this.joinKey()
-  }
-
-  tempAllLikedSet(userId: string) {
-    this.keyArr = [USER, userId, 'tempAllLikedSet']
-    return this.joinKey()
-  }
+function joinKey(keyArr: string[]) {
+  return [config.className].concat(keyArr).join(':')
 }
 
-const key = new Key()
-export default key
+export function userLikedSet(userId: string) {
+  return joinKey([USER, userId, 'liked'])
+}
+
+export function userDislikedSet(userId: string) {
+  return joinKey([USER, userId, 'disliked'])
+}
+
+export function itemLikedBySet(itemId: string) {
+  return joinKey([ITEM, itemId, 'liked'])
+}
+
+export function itemDislikedBySet(itemId: string) {
+  return joinKey([ITEM, itemId, 'disliked'])
+}
+
+export function mostLiked() {
+  return joinKey(['mostLiked'])
+}
+
+export function mostDisliked() {
+  return joinKey(['mostDisliked'])
+}
+
+export function recommendedZSet(userId: string) {
+  return joinKey([USER, userId, 'recommendedZSet'])
+}
+
+export function scoreboardZSet() {
+  return joinKey(['scoreboard'])
+}
+
+export function similarityZSet(userId: string) {
+  return joinKey([USER, userId, 'similarityZSet'])
+}
+
+export function tempAllLikedSet(userId: string) {
+  return joinKey([USER, userId, 'tempAllLikedSet'])
+}

@@ -1,5 +1,5 @@
 import client from './client'
-import Key from './key'
+import * as Key from './key'
 
 export const recommendFor = function(userId: string, numberOfRecs: number) {
   return client.zrevrange(Key.recommendedZSet(userId), 0, numberOfRecs)

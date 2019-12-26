@@ -1,4 +1,4 @@
-import Key from './key'
+import * as Key from './key'
 import client from './client'
 import * as algo from './algorithms'
 
