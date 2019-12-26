@@ -1,95 +1,48 @@
 # recommendationRaccoon (raccoon)
 
-<img align="right" src="http://i42.tinypic.com/2d12qli.png">
-
 An easy-to-use collaborative filtering based recommendation engine and NPM module built on top of Node.js and Redis. The engine uses the Jaccard coefficient to determine the similarity between users and k-nearest-neighbors to create recommendations. This module is useful for anyone with users, a store of products/movies/items, and the desire to give their users the ability to like/dislike and receive recommendations based on similar users. Raccoon takes care of all the recommendation and rating logic. It can be paired with any database as it does not keep track of any user/item information besides a unique ID.
 
 Updated for ES6.
 
-#### Request of you
-If you enjoy using this module, please contribute by trying the benchmark repo and helping to optimize raccoon. Thanks! https://github.com/guymorita/benchmark_raccoon_movielens
-
-[![Coverage Status](https://coveralls.io/repos/guymorita/recommendationRaccoon/badge.png?branch=master)](https://coveralls.io/r/guymorita/recommendationRaccoon?branch=master)
-[![Build Status](https://travis-ci.org/guymorita/recommendationRaccoon.svg?branch=master)](https://travis-ci.org/guymorita/recommendationRaccoon)
-
-<a href="https://nodei.co/npm/raccoon/"><img src="https://nodei.co/npm/raccoon.png?downloads=true"></a>
-
-
-## Demo App
-
-#### Benchmark / Performance Repo <a href="https://github.com/guymorita/benchmark_raccoon_movielens" target="_blank">https://github.com/guymorita/benchmark_raccoon_movielens</a>
-
-#### Demo / UI Repo: <a href="https://github.com/guymorita/Mosaic-Films---Recommendation-Engine-Demo" target="_blank">https://github.com/guymorita/Mosaic-Films---Recommendation-Engine-Demo</a>
+**Forked (guymorita/recommendationRaccoon)[https://github.com/guymorita/recommendationRaccoon]**
 
 ## Requirements
 
-* Node.js 6.x
+* Node.js 11.x
 * Redis
-* Async
-* Underscore
-* Bluebird
 
-## Installation
+## Install
 
-``` bash
-npm install raccoon
+```bash
+npm install @maruware/raccoon
 ```
 
-## Quickstart
+## Usage
 
 Raccoon keeps track of the ratings and recommendations from your users. It does not need to store any meta data of the user or product aside from an id. To get started:
 
-#### Install Raccoon:
-``` bash
-npm install raccoon
-```
+```ts
+import Raccoon from '@maruware/raccoon'
 
-#### Setup Redis:
-If local:
-``` bash
-npm install redis
-redis-server
-```
-If remote or you need to customize the connection settings use the process.env variables:
-- RACCOON_REDIS_URL
-- RACCOON_REDIS_PORT
-- RACCOON_REDIS_AUTH
-
-#### Require raccoon:
-``` js
-const raccoon = require('raccoon');
-```
-
-#### Add in ratings & Ask for recommendations:
-``` js
-raccoon.liked('garyId', 'movieId').then(() => {
-  return raccoon.liked('garyId', 'movie2Id');  
-}).then(() => {
-  return raccoon.liked('chrisId', 'movieId');  
-}).then(() => {
-  return raccoon.recommendFor('chrisId', 10);
-}).then((recs) => {
-  console.log('recs', recs);
+async () => {
+  const raccoon = new Raccoon({
+    className: 'movie',
+    redisUrl: 'YOUR_REDIS_URL'
+  })
+  await raccoon.liked('garyId', 'movieId')
+  await raccoon.liked('garyId', 'movie2Id')
+  await raccoon.liked('chrisId', 'movieId')
+  const recs = await raccoon.recommendFor('chrisId', 10)
+  console.log('recs', recs)
   // results will be an array of x ranked recommendations for chris
   // in this case it would contain movie2
-});
-```
+}
 
-
-## config
-
-``` js
-// these are the default values but you can change them
-raccoon.config.nearestNeighbors = 5;  // number of neighbors you want to compare a user against
-raccoon.config.className = 'movie';  // prefix for your items (used for redis)
-raccoon.config.numOfRecsStore = 30;  // number of recommendations to store per user
 ```
 
 ## Full Usage
 
-### Inputs
-
-#### Likes:
+### Likes:
 ``` js
 raccoon.liked('userId', 'itemId').then(() => {
 });
@@ -122,7 +75,7 @@ raccoon.unliked('userId', 'itemId').then(() => {
 // removes the liked rating from all sets and updates. not the same as disliked.
 ```
 
-#### Dislikes:
+### Dislikes:
 ``` js
 raccoon.disliked('userId', 'itemId').then(() => {
 });
@@ -165,7 +118,7 @@ raccoon.leastSimilarUsers('userId').then((results) => {
 
 ### User Statistics
 
-#### Ratings:
+### Ratings:
 ``` js
 raccoon.bestRated().then((results) => {
   // returns an array of the 'scoreboard' sorted set which represents the global
@@ -179,7 +132,7 @@ raccoon.worstRated().then((results) => {
 });
 ```
 
-#### Liked/Disliked lists and counts:
+### Liked/Disliked lists and counts:
 ``` js
 raccoon.mostLiked().then((results) => {
   // returns an array of the 'mostLiked' sorted set which represents the global
@@ -247,8 +200,7 @@ When combined with hiredis, redis can get/set at ~40,000 operations/second using
 ## Run tests
 
 ``` bash
-grunt test
-grunt mochacov:coverage
+yarn test
 ```
 
 ## Tech Stack
@@ -260,6 +212,6 @@ For testing, raccoon uses Mocha Chai as a testing suite, automates it with Grunt
 ## Links
 
 * Code: 'git clone git://github.com/guymorita/recommendationRaccoon.git'
-* NPM Module: 'https://npmjs.org/package/raccoon'
+* NPM Module(Original): 'https://npmjs.org/package/raccoon'
 * Benchmark / Performance repo: 'https://github.com/guymorita/benchmark_raccoon_movielens'
 * Demo / UI App repo: 'https://github.com/guymorita/Mosaic-Films---Recommendation-Engine-Demo'

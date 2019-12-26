@@ -1,6 +1,6 @@
 {
-  "name": "raccoon",
-  "author": "Guy Morita",
+  "name": "@maruware/raccoon",
+  "author": "maruware",
   "description": "A Collaborative Filtering Recommendation Engine for Node.js utilizing Redis",
   "version": "0.2.8",
   "repository": {
@@ -19,14 +19,18 @@
     "p-map": "^3.0.0",
     "redis": "~2.6.x"
   },
-  "main": "./index.js",
+  "main": "./dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "engines": {
-    "node": ">= 6.0.0"
+    "node": ">=11.0.0"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/guymorita/recommendationRaccoon/LICENSE"
+      "url": "https://github.com/maruware/recommendationRaccoon/LICENSE"
     }
   ],
   "keywords": [
@@ -42,7 +46,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "bugs": {
-    "url": "https://github.com/guymorita/recommendationRaccoon/issues"
+    "url": "https://github.com/maruware/recommendationRaccoon/issues"
   },
   "devDependencies": {
     "@types/ioredis": "^4.14.3",
