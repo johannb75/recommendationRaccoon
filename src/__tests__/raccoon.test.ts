@@ -1,7 +1,5 @@
 /* eslint-env jest */
 
-import client from '../lib/client'
-
 // var blanket = require("blanket")({
 //     // options are passed as an argument object to the require statement
 //    "pattern": "../lib/"
@@ -9,11 +7,12 @@ import client from '../lib/client'
 
 // const config = require('../dist/lib/config.js'),
 // const raccoon = require('../dist/lib/raccoon.js');
-import * as raccoon from '../lib/raccoon'
+import Raccoon from '../index'
+const raccoon = new Raccoon({})
 
 describe('basic likes, dislikes, unlikes, and undislikes', function() {
   beforeEach(async () => {
-    await client.flushdb()
+    await raccoon.client.flushdb()
     await raccoon.liked('chris', 'batman')
     await raccoon.liked('larry', 'batman')
     await raccoon.disliked('greg', 'batman')
@@ -24,25 +23,25 @@ describe('basic likes, dislikes, unlikes, and undislikes', function() {
   })
   describe('basic like', function() {
     it('should validate a user has been added after a rating', async () => {
-      const results = await client.smembers('movie:user:chris:liked')
+      const results = await raccoon.client.smembers('movie:user:chris:liked')
       expect(results[0]).toBe('batman')
     })
   })
   describe('basic dislike', function() {
     it('should validate a user has been added after a rating', async () => {
-      const results = await client.smembers('movie:user:greg:disliked')
+      const results = await raccoon.client.smembers('movie:user:greg:disliked')
       expect(results[0]).toBe('batman')
     })
   })
   describe('basic unlike', function() {
     it('should validate a user has been removed after an unlike', async () => {
-      const results = await client.smembers('movie:user:mai:liked')
+      const results = await raccoon.client.smembers('movie:user:mai:liked')
       expect(results[0]).toBe(undefined)
     })
   })
   describe('basic undislike', function() {
     it('should validate a user has been removed after an undislike', async () => {
-      const results = client.smembers('movie:user:jesse:disliked')
+      const results = raccoon.client.smembers('movie:user:jesse:disliked')
       expect(results[0]).toBe(undefined)
     })
   })
@@ -59,7 +58,7 @@ describe('callbacks', function() {
 
 describe('accurate recommendations', function() {
   beforeAll(async () => {
-    await client.flushdb()
+    await raccoon.client.flushdb()
 
     await raccoon.liked('ChristianB', 'Typical')
     await raccoon.liked('ChristianB', 'Value7')
@@ -80,7 +79,7 @@ describe('accurate recommendations', function() {
 
 describe('recommendations', function() {
   beforeAll(async () => {
-    await client.flushdb()
+    await raccoon.client.flushdb()
     await raccoon.liked('chris', 'batman')
     await raccoon.liked('chris', 'superman')
     await raccoon.disliked('chris', 'chipmunks')
@@ -117,7 +116,7 @@ describe('recommendations', function() {
 
 describe('stats1', function() {
   beforeAll(async () => {
-    await client.flushdb()
+    await raccoon.client.flushdb()
     await raccoon.liked('chris', 'batman')
     await raccoon.liked('chris', 'superman')
     await raccoon.disliked('chris', 'chipmunks')

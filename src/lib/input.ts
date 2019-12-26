@@ -6,27 +6,41 @@ import {
   mostLikedKey,
   mostDislikedKey
 } from './key'
-import client from './client'
 import {
   updateSimilarityFor,
   updateWilsonScore,
   updateRecommendationsFor
 } from './algorithms'
+import { Redis } from 'ioredis'
+import Config from './config'
 
-export const updateSequence = async function(userId: string, itemId: string) {
+const updateSequence = async function(
+  client: Redis,
+  config: Config,
+  userId: string,
+  itemId: string
+) {
   // let updateWilson = true;
   // if ('updateWilson' in options) {
   //   updateWilson = options.updateWilson ? true : false;
   // }
 
-  await updateSimilarityFor(userId)
+  await updateSimilarityFor(client, config.className, userId)
   return Promise.all([
-    updateWilsonScore(itemId),
-    updateRecommendationsFor(userId)
+    updateWilsonScore(client, config.className, itemId),
+    updateRecommendationsFor(
+      client,
+      config.className,
+      config.nearestNeighbors,
+      config.numOfRecsStore,
+      userId
+    )
   ])
 }
 
 const changeRating = async function(
+  client: Redis,
+  config: Config,
   userId: string,
   itemId: string,
   options: any
@@ -39,12 +53,14 @@ const changeRating = async function(
   const removeRating = !!options.removeRating
 
   const feelingItemSet = options.liked
-    ? itemLikedBySetKey(itemId)
-    : itemDislikedBySetKey(itemId)
+    ? itemLikedBySetKey(config.className, itemId)
+    : itemDislikedBySetKey(config.className, itemId)
   const feelingUserSet = options.liked
-    ? userLikedSetKey(userId)
-    : userDislikedSetKey(userId)
-  const mostFeelingSet = options.liked ? mostLikedKey() : mostDislikedKey()
+    ? userLikedSetKey(config.className, userId)
+    : userDislikedSetKey(config.className, userId)
+  const mostFeelingSet = options.liked
+    ? mostLikedKey(config.className)
+    : mostDislikedKey(config.className)
 
   const result = await client.sismember(feelingItemSet, userId)
 
@@ -63,44 +79,56 @@ const changeRating = async function(
 
   const result2 = await client.sismember(feelingItemSet, userId)
   if (updateRecommendations && result2 > 0) {
-    await updateSequence(userId, itemId)
+    await updateSequence(client, config, userId, itemId)
   }
 }
 
 export const liked = function(
+  client: Redis,
+  config: Config,
+
   userId: string,
   itemId: string,
   options: any = {}
 ) {
   options.liked = true
-  return changeRating(userId, itemId, options)
+  return changeRating(client, config, userId, itemId, options)
 }
 
 export const disliked = function(
+  client: Redis,
+  config: Config,
+
   userId: string,
   itemId: string,
   options: any = {}
 ) {
   options.liked = false
-  return changeRating(userId, itemId, options)
+  return changeRating(client, config, userId, itemId, options)
 }
 
 export const unliked = function(
+  client: Redis,
+  config: Config,
+
   userId: string,
   itemId: string,
   options: any = {}
 ) {
   options.liked = true
   options.removeRating = true
-  return changeRating(userId, itemId, options)
+  return changeRating(client, config, userId, itemId, options)
 }
 
 export const undisliked = function(
+  client: Redis,
+  config: Config,
+
   userId: string,
   itemId: string,
   options: any = {}
 ) {
   options.liked = false
   options.removeRating = true
-  return changeRating(userId, itemId, options)
+  return changeRating(client, config, userId, itemId, options)
 }

@@ -1,6 +1,4 @@
-import config from './config'
 import _ from 'lodash'
-import client from './client'
 
 import pMap from 'p-map'
 import {
@@ -13,17 +11,23 @@ import {
   recommendedZSetKey,
   scoreboardZSetKey
 } from './key'
+import { Redis } from 'ioredis'
 
 // the jaccard coefficient outputs an objective measurement of the similarity between two objects. in this case, two users. the coefficient
 // is the result of summing the two users likes/dislikes incommon then summing they're likes/dislikes that they disagree on. this sum is
 // then divided by the number of items they both reviewed.
-const jaccardCoefficient = async function(userId1: string, userId2: string) {
+const jaccardCoefficient = async function(
+  client: Redis,
+  className: string,
+  userId1: string,
+  userId2: string
+) {
   // finalJaccard = 0,
 
-  const user1LikedSet = userLikedSetKey(userId1)
-  const user1DislikedSet = userDislikedSetKey(userId1)
-  const user2LikedSet = userLikedSetKey(userId2)
-  const user2DislikedSet = userDislikedSetKey(userId2)
+  const user1LikedSet = userLikedSetKey(className, userId1)
+  const user1DislikedSet = userDislikedSetKey(className, userId1)
+  const user2LikedSet = userLikedSetKey(className, userId2)
+  const user2DislikedSet = userDislikedSetKey(className, userId2)
 
   // retrieving a set of the users likes incommon
   const results1 = await client.sinter(user1LikedSet, user2LikedSet)
@@ -45,18 +49,22 @@ const jaccardCoefficient = async function(userId1: string, userId2: string) {
 // this function updates the similarity for one user versus all others. at scale this probably needs to be refactored to compare a user
 // against clusters of users instead of against all. every comparison will be a value between -1 and 1 representing simliarity.
 // -1 is exact opposite, 1 is exactly the same.
-export const updateSimilarityFor = async function(userId: string) {
+export const updateSimilarityFor = async function(
+  client: Redis,
+  className: string,
+  userId: string
+) {
   // turning the userId into a string. depending on the db they might send an object, in which it won't compare properly when comparing
   // to other users
   // userId = String(userId)
   // initializing variables
   let itemLikeDislikeKeys: string[] = []
   // setting the redis key for the user's similarity set
-  const similarityZSet = similarityZSetKey(userId)
+  const similarityZSet = similarityZSetKey(className, userId)
   // creating a combined set with the all of a users likes and dislikes
   const userRatedItemIds = await client.sunion(
-    userLikedSetKey(userId),
-    userDislikedSetKey(userId)
+    userLikedSetKey(className, userId),
+    userDislikedSetKey(className, userId)
   )
   // if they have rated anything
   if (userRatedItemIds.length > 0) {
@@ -64,9 +72,9 @@ export const updateSimilarityFor = async function(userId: string) {
     itemLikeDislikeKeys = _(userRatedItemIds)
       .map(function(itemId) {
         // key for that item being liked
-        const itemLiked = itemLikedBySetKey(itemId)
+        const itemLiked = itemLikedBySetKey(className, itemId)
         // key for the item being disliked
-        const itemDisliked = itemDislikedBySetKey(itemId)
+        const itemDisliked = itemDislikedBySetKey(className, itemId)
         // returning an array of those keys
         return [itemLiked, itemDisliked]
       })
@@ -88,22 +96,32 @@ export const updateSimilarityFor = async function(userId: string) {
     if (userId !== otherUserId) {
       // calculate the jaccard coefficient for similarity. it will return a value between -1 and 1 showing the two users
       // similarity
-      const result = await jaccardCoefficient(userId, otherUserId)
+      const result = await jaccardCoefficient(
+        client,
+        className,
+        userId,
+        otherUserId
+      )
       await client.zadd(similarityZSet, result.toString(), otherUserId)
     }
   })
 }
 
-export const predictFor = async function(userId: string, itemId: string) {
+export const predictFor = async function(
+  client: Redis,
+  className: string,
+  userId: string,
+  itemId: string
+) {
   // userId = String(userId);
   // itemId = String(itemId);
   let finalSimilaritySum = 0.0
-  const similarityZSet = similarityZSetKey(userId)
-  const likedBySet = itemLikedBySetKey(itemId)
-  const dislikedBySet = itemDislikedBySetKey(itemId)
+  const similarityZSet = similarityZSetKey(className, userId)
+  const likedBySet = itemLikedBySetKey(className, itemId)
+  const dislikedBySet = itemDislikedBySetKey(className, itemId)
 
-  const result1 = await similaritySum(similarityZSet, likedBySet)
-  const result2 = await similaritySum(similarityZSet, dislikedBySet)
+  const result1 = await similaritySum(client, similarityZSet, likedBySet)
+  const result2 = await similaritySum(client, similarityZSet, dislikedBySet)
   finalSimilaritySum = result1 - result2
   const likedByCount = await client.scard(likedBySet)
   const dislikedByCount = await client.scard(dislikedBySet)
@@ -116,7 +134,11 @@ export const predictFor = async function(userId: string, itemId: string) {
   }
 }
 
-export const similaritySum = async function(simSet: string, compSet: string) {
+export const similaritySum = async function(
+  client: Redis,
+  simSet: string,
+  compSet: string
+) {
   let similarSum = 0.0
   const userIds = await client.smembers(compSet)
   await pMap(
@@ -137,35 +159,41 @@ export const similaritySum = async function(simSet: string, compSet: string) {
 // names of the items and the score is what raccoon estimates that user would rate it
 // the values are generally not going to be -1 or 1 exactly because there isn't 100%
 // certainty.
-export const updateRecommendationsFor = async function(userId: string) {
+export const updateRecommendationsFor = async function(
+  client: Redis,
+  className: string,
+  nearestNeighbors: number,
+  numOfRecsStore: number,
+  userId: string
+) {
   // turning the user input into a string so it can be compared properly
   // userId = String(userId);
   // creating two blank arrays
   const setsToUnion: string[] = []
   const scoreMap: [number, string][] = []
   // initializing the redis keys for temp sets, the similarity set and the recommended set
-  const tempAllLikedSet = tempAllLikedSetKey(userId)
-  const similarityZSet = similarityZSetKey(userId)
-  const recommendedZSet = recommendedZSetKey(userId)
+  const tempAllLikedSet = tempAllLikedSetKey(className, userId)
+  const similarityZSet = similarityZSetKey(className, userId)
+  const recommendedZSet = recommendedZSetKey(className, userId)
 
   const mostSimilarUserIds = await client.zrevrange(
     similarityZSet,
     0,
-    config.nearestNeighbors - 1
+    nearestNeighbors - 1
   )
   const leastSimilarUserIds = await client.zrange(
     similarityZSet,
     0,
-    config.nearestNeighbors - 1
+    nearestNeighbors - 1
   )
   // iterate through the user ids to create the redis keys for all those users likes
   _.each(mostSimilarUserIds, function(usrId) {
-    setsToUnion.push(userLikedSetKey(usrId))
+    setsToUnion.push(userLikedSetKey(className, usrId))
   })
   // if you want to factor in the least similar least likes, you change this in config
   // left it off because it was recommending items that every disliked universally
   _.each(leastSimilarUserIds, function(usrId) {
-    setsToUnion.push(userDislikedSetKey(usrId))
+    setsToUnion.push(userDislikedSetKey(className, usrId))
   })
   // if there is at least one set in the array, continue
   if (setsToUnion.length > 0) {
@@ -174,14 +202,14 @@ export const updateRecommendationsFor = async function(userId: string) {
     await client.sunionstore(tempAllLikedSet, ...setsToUnion)
     const notYetRatedItems = await client.sdiff(
       tempAllLikedSet,
-      userLikedSetKey(userId),
-      userDislikedSetKey(userId)
+      userLikedSetKey(className, userId),
+      userDislikedSetKey(className, userId)
     )
 
     await pMap(
       notYetRatedItems,
       async function(itemId) {
-        const score = await predictFor(userId, itemId)
+        const score = await predictFor(client, className, userId, itemId)
         scoreMap.push([score, itemId])
       },
       { concurrency: 1 }
@@ -206,18 +234,22 @@ export const updateRecommendationsFor = async function(userId: string) {
     await client.zremrangebyrank(
       recommendedZSet,
       0,
-      length - config.numOfRecsStore - 1
+      length - numOfRecsStore - 1
     )
   }
 }
 
 // the wilson score is a proxy for 'best rated'. it represents the best finding the best ratio of likes and also eliminating
 // outliers. the wilson score is a value between 0 and 1.
-export const updateWilsonScore = async function(itemId: string) {
+export const updateWilsonScore = async function(
+  client: Redis,
+  className: string,
+  itemId: string
+) {
   // creating the redis keys for scoreboard and to get the items liked and disliked sets
-  const scoreboard = scoreboardZSetKey()
-  const likedBySet = itemLikedBySetKey(itemId)
-  const dislikedBySet = itemDislikedBySetKey(itemId)
+  const scoreboard = scoreboardZSetKey(className)
+  const likedBySet = itemLikedBySetKey(className, itemId)
+  const dislikedBySet = itemDislikedBySetKey(className, itemId)
   // used for a confidence interval of 95%
   const z = 1.96
   // initializing variables to calculate wilson score

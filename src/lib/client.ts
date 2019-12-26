@@ -1,13 +1,12 @@
 import Redis from 'ioredis'
-import config from './config'
-
-const client = new Redis(config.redisPort, config.redisUrl)
-if (config.redisAuth) {
-  client.auth(config.redisAuth, function(err) {
-    if (err) {
-      throw err
-    }
-  })
+export default (redisPort: number, redisUrl: string, redisAuth?: string) => {
+  const client = new Redis(redisPort, redisUrl)
+  if (redisAuth) {
+    client.auth(redisAuth, function(err) {
+      if (err) {
+        throw err
+      }
+    })
+  }
+  return client
 }
-
-export default client

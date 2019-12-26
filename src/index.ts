@@ -1,1 +1,1 @@
-export * from './lib/raccoon'
+export { default } from './lib/raccoon'
