@@ -2,51 +2,59 @@ import client from './client'
 import * as Key from './key'
 
 export const recommendFor = function(userId: string, numberOfRecs: number) {
-  return client.zrevrange(Key.recommendedZSet(userId), 0, numberOfRecs)
+  return client.zrevrange(Key.recommendedZSetKey(userId), 0, numberOfRecs)
 }
 export const bestRated = function() {
-  return client.zrevrange(Key.scoreboardZSet(), 0, -1)
+  return client.zrevrange(Key.scoreboardZSetKey(), 0, -1)
 }
 export const worstRated = function() {
-  return client.zrange(Key.scoreboardZSet(), 0, -1)
+  return client.zrange(Key.scoreboardZSetKey(), 0, -1)
 }
 export const bestRatedWithScores = function(numOfRatings: number) {
-  return client.zrevrange(Key.scoreboardZSet(), 0, numOfRatings, 'WITHSCORES')
+  return client.zrevrange(
+    Key.scoreboardZSetKey(),
+    0,
+    numOfRatings,
+    'WITHSCORES'
+  )
 }
 export const mostLiked = function() {
-  return client.zrevrange(Key.mostLiked(), 0, -1)
+  return client.zrevrange(Key.mostLikedKey(), 0, -1)
 }
 export const mostDisliked = function() {
-  return client.zrevrange(Key.mostDisliked(), 0, -1)
+  return client.zrevrange(Key.mostDislikedKey(), 0, -1)
 }
 export const usersWhoLikedAlsoLiked = function(itemId: string) {
   console.log(itemId)
   throw new Error('not yet implement')
 }
 export const mostSimilarUsers = function(userId: string) {
-  return client.zrevrange(Key.similarityZSet(userId), 0, -1)
+  return client.zrevrange(Key.similarityZSetKey(userId), 0, -1)
 }
 export const leastSimilarUsers = function(userId: string) {
-  return client.zrange(Key.similarityZSet(userId), 0, -1)
+  return client.zrange(Key.similarityZSetKey(userId), 0, -1)
 }
 export const likedBy = function(itemId: string) {
-  return client.smembers(Key.itemLikedBySet(itemId))
+  return client.smembers(Key.itemLikedBySetKey(itemId))
 }
 export const likedCount = function(itemId: string) {
-  return client.scard(Key.itemLikedBySet(itemId))
+  return client.scard(Key.itemLikedBySetKey(itemId))
 }
 export const dislikedBy = function(itemId: string) {
-  return client.smembers(Key.itemDislikedBySet(itemId))
+  return client.smembers(Key.itemDislikedBySetKey(itemId))
 }
 export const dislikedCount = function(itemId: string) {
-  return client.scard(Key.itemDislikedBySet(itemId))
+  return client.scard(Key.itemDislikedBySetKey(itemId))
 }
 export const allLikedFor = function(userId: string) {
-  return client.smembers(Key.userLikedSet(userId))
+  return client.smembers(Key.userLikedSetKey(userId))
 }
 export const allDislikedFor = function(userId: string) {
-  return client.smembers(Key.userDislikedSet(userId))
+  return client.smembers(Key.userDislikedSetKey(userId))
 }
 export const allWatchedFor = function(userId: string) {
-  return client.sunion(Key.userLikedSet(userId), Key.userDislikedSet(userId))
+  return client.sunion(
+    Key.userLikedSetKey(userId),
+    Key.userDislikedSetKey(userId)
+  )
 }

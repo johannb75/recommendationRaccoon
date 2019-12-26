@@ -11,10 +11,10 @@ import pMap from 'p-map'
 const jaccardCoefficient = async function(userId1: string, userId2: string) {
   // finalJaccard = 0,
 
-  const user1LikedSet = Key.userLikedSet(userId1)
-  const user1DislikedSet = Key.userDislikedSet(userId1)
-  const user2LikedSet = Key.userLikedSet(userId2)
-  const user2DislikedSet = Key.userDislikedSet(userId2)
+  const user1LikedSet = Key.userLikedSetKey(userId1)
+  const user1DislikedSet = Key.userDislikedSetKey(userId1)
+  const user2LikedSet = Key.userLikedSetKey(userId2)
+  const user2DislikedSet = Key.userDislikedSetKey(userId2)
 
   // retrieving a set of the users likes incommon
   const results1 = await client.sinter(user1LikedSet, user2LikedSet)
@@ -43,11 +43,11 @@ export const updateSimilarityFor = async function(userId: string) {
   // initializing variables
   let itemLikeDislikeKeys: string[] = []
   // setting the redis key for the user's similarity set
-  const similarityZSet = Key.similarityZSet(userId)
+  const similarityZSet = Key.similarityZSetKey(userId)
   // creating a combined set with the all of a users likes and dislikes
   const userRatedItemIds = await client.sunion(
-    Key.userLikedSet(userId),
-    Key.userDislikedSet(userId)
+    Key.userLikedSetKey(userId),
+    Key.userDislikedSetKey(userId)
   )
   // if they have rated anything
   if (userRatedItemIds.length > 0) {
@@ -55,9 +55,9 @@ export const updateSimilarityFor = async function(userId: string) {
     itemLikeDislikeKeys = _(userRatedItemIds)
       .map(function(itemId) {
         // key for that item being liked
-        const itemLiked = Key.itemLikedBySet(itemId)
+        const itemLiked = Key.itemLikedBySetKey(itemId)
         // key for the item being disliked
-        const itemDisliked = Key.itemDislikedBySet(itemId)
+        const itemDisliked = Key.itemDislikedBySetKey(itemId)
         // returning an array of those keys
         return [itemLiked, itemDisliked]
       })
@@ -89,9 +89,9 @@ export const predictFor = async function(userId: string, itemId: string) {
   // userId = String(userId);
   // itemId = String(itemId);
   let finalSimilaritySum = 0.0
-  const similarityZSet = Key.similarityZSet(userId)
-  const likedBySet = Key.itemLikedBySet(itemId)
-  const dislikedBySet = Key.itemDislikedBySet(itemId)
+  const similarityZSet = Key.similarityZSetKey(userId)
+  const likedBySet = Key.itemLikedBySetKey(itemId)
+  const dislikedBySet = Key.itemDislikedBySetKey(itemId)
 
   const result1 = await similaritySum(similarityZSet, likedBySet)
   const result2 = await similaritySum(similarityZSet, dislikedBySet)
@@ -135,9 +135,9 @@ export const updateRecommendationsFor = async function(userId: string) {
   const setsToUnion: string[] = []
   const scoreMap: [number, string][] = []
   // initializing the redis keys for temp sets, the similarity set and the recommended set
-  const tempAllLikedSet = Key.tempAllLikedSet(userId)
-  const similarityZSet = Key.similarityZSet(userId)
-  const recommendedZSet = Key.recommendedZSet(userId)
+  const tempAllLikedSet = Key.tempAllLikedSetKey(userId)
+  const similarityZSet = Key.similarityZSetKey(userId)
+  const recommendedZSet = Key.recommendedZSetKey(userId)
 
   const mostSimilarUserIds = await client.zrevrange(
     similarityZSet,
@@ -151,12 +151,12 @@ export const updateRecommendationsFor = async function(userId: string) {
   )
   // iterate through the user ids to create the redis keys for all those users likes
   _.each(mostSimilarUserIds, function(usrId) {
-    setsToUnion.push(Key.userLikedSet(usrId))
+    setsToUnion.push(Key.userLikedSetKey(usrId))
   })
   // if you want to factor in the least similar least likes, you change this in config
   // left it off because it was recommending items that every disliked universally
   _.each(leastSimilarUserIds, function(usrId) {
-    setsToUnion.push(Key.userDislikedSet(usrId))
+    setsToUnion.push(Key.userDislikedSetKey(usrId))
   })
   // if there is at least one set in the array, continue
   if (setsToUnion.length > 0) {
@@ -165,8 +165,8 @@ export const updateRecommendationsFor = async function(userId: string) {
     await client.sunionstore(tempAllLikedSet, ...setsToUnion)
     const notYetRatedItems = await client.sdiff(
       tempAllLikedSet,
-      Key.userLikedSet(userId),
-      Key.userDislikedSet(userId)
+      Key.userLikedSetKey(userId),
+      Key.userDislikedSetKey(userId)
     )
 
     await pMap(
@@ -206,9 +206,9 @@ export const updateRecommendationsFor = async function(userId: string) {
 // outliers. the wilson score is a value between 0 and 1.
 export const updateWilsonScore = async function(itemId: string) {
   // creating the redis keys for scoreboard and to get the items liked and disliked sets
-  const scoreboard = Key.scoreboardZSet()
-  const likedBySet = Key.itemLikedBySet(itemId)
-  const dislikedBySet = Key.itemDislikedBySet(itemId)
+  const scoreboard = Key.scoreboardZSetKey()
+  const likedBySet = Key.itemLikedBySetKey(itemId)
+  const dislikedBySet = Key.itemDislikedBySetKey(itemId)
   // used for a confidence interval of 95%
   const z = 1.96
   // initializing variables to calculate wilson score

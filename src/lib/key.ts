@@ -7,42 +7,42 @@ function joinKey(keyArr: string[]) {
   return [config.className].concat(keyArr).join(':')
 }
 
-export function userLikedSet(userId: string) {
+export function userLikedSetKey(userId: string) {
   return joinKey([USER, userId, 'liked'])
 }
 
-export function userDislikedSet(userId: string) {
+export function userDislikedSetKey(userId: string) {
   return joinKey([USER, userId, 'disliked'])
 }
 
-export function itemLikedBySet(itemId: string) {
+export function itemLikedBySetKey(itemId: string) {
   return joinKey([ITEM, itemId, 'liked'])
 }
 
-export function itemDislikedBySet(itemId: string) {
+export function itemDislikedBySetKey(itemId: string) {
   return joinKey([ITEM, itemId, 'disliked'])
 }
 
-export function mostLiked() {
+export function mostLikedKey() {
   return joinKey(['mostLiked'])
 }
 
-export function mostDisliked() {
+export function mostDislikedKey() {
   return joinKey(['mostDisliked'])
 }
 
-export function recommendedZSet(userId: string) {
+export function recommendedZSetKey(userId: string) {
   return joinKey([USER, userId, 'recommendedZSet'])
 }
 
-export function scoreboardZSet() {
+export function scoreboardZSetKey() {
   return joinKey(['scoreboard'])
 }
 
-export function similarityZSet(userId: string) {
+export function similarityZSetKey(userId: string) {
   return joinKey([USER, userId, 'similarityZSet'])
 }
 
-export function tempAllLikedSet(userId: string) {
+export function tempAllLikedSetKey(userId: string) {
   return joinKey([USER, userId, 'tempAllLikedSet'])
 }

@@ -28,12 +28,14 @@ const changeRating = async function(
   const removeRating = !!options.removeRating
 
   const feelingItemSet = options.liked
-    ? Key.itemLikedBySet(itemId)
-    : Key.itemDislikedBySet(itemId)
+    ? Key.itemLikedBySetKey(itemId)
+    : Key.itemDislikedBySetKey(itemId)
   const feelingUserSet = options.liked
-    ? Key.userLikedSet(userId)
-    : Key.userDislikedSet(userId)
-  const mostFeelingSet = options.liked ? Key.mostLiked() : Key.mostDisliked()
+    ? Key.userLikedSetKey(userId)
+    : Key.userDislikedSetKey(userId)
+  const mostFeelingSet = options.liked
+    ? Key.mostLikedKey()
+    : Key.mostDislikedKey()
 
   const result = await client.sismember(feelingItemSet, userId)
 
