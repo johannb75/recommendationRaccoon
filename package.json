@@ -7,11 +7,18 @@
     "type": "git",
     "url": "https://github.com/guymorita/recommendationRaccoon.git"
   },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
   "dependencies": {
     "async": "~2.1.x",
     "bluebird": "~3.4.x",
-    "redis": "~2.6.x",
-    "underscore": "~1.8.x"
+    "ioredis": "^4.14.1",
+    "lodash": "^4.17.15",
+    "p-all": "^2.1.0",
+    "p-map": "^3.0.0",
+    "redis": "~2.6.x"
   },
   "main": "./index.js",
   "engines": {
@@ -39,11 +46,25 @@
     "url": "https://github.com/guymorita/recommendationRaccoon/issues"
   },
   "devDependencies": {
-    "chai": "~3.5.0",
-    "grunt": "^1.0.1",
-    "grunt-contrib-jshint": "^1.1.0",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-mocha-cov": "^0.4.0",
-    "mocha": "~3.2.0"
+    "@types/bluebird": "^3.5.29",
+    "@types/ioredis": "^4.14.3",
+    "@types/jest": "^24.0.24",
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^12.12.21",
+    "@types/redis": "^2.8.14",
+    "@typescript-eslint/eslint-plugin": "^2.12.0",
+    "@typescript-eslint/parser": "^2.12.0",
+    "eslint": "^6.7.2",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^24.9.0",
+    "prettier": "^1.19.1",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.3"
   }
 }
