@@ -1,5 +1,5 @@
 import Config, { ConfigArgs } from './config'
-import client from './client'
+import { createClient } from './client'
 import { Redis } from 'ioredis'
 import { liked, disliked, unliked, undisliked } from './input'
 
@@ -35,7 +35,7 @@ export default class Raccoon {
   client: Redis
   constructor(config: ConfigArgs) {
     this.config = new Config(config)
-    this.client = client(
+    this.client = createClient(
       this.config.redisPort,
       this.config.redisUrl,
       this.config.redisAuth
