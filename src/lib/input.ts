@@ -7,7 +7,11 @@ import {
   mostDislikedKey
 } from './key'
 import client from './client'
-import * as algo from './algorithms'
+import {
+  updateSimilarityFor,
+  updateWilsonScore,
+  updateRecommendationsFor
+} from './algorithms'
 
 export const updateSequence = async function(userId: string, itemId: string) {
   // let updateWilson = true;
@@ -15,10 +19,10 @@ export const updateSequence = async function(userId: string, itemId: string) {
   //   updateWilson = options.updateWilson ? true : false;
   // }
 
-  await algo.updateSimilarityFor(userId)
+  await updateSimilarityFor(userId)
   return Promise.all([
-    algo.updateWilsonScore(itemId),
-    algo.updateRecommendationsFor(userId)
+    updateWilsonScore(itemId),
+    updateRecommendationsFor(userId)
   ])
 }
 
