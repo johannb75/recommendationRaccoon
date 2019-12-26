@@ -14,7 +14,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "async": "~2.1.x",
     "ioredis": "^4.14.1",
     "p-all": "^2.1.0",
     "p-map": "^3.0.0",
