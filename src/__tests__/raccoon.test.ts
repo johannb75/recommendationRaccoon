@@ -198,6 +198,10 @@ describe('stats1', function() {
     const leastSimilarUsers = await raccoon.leastSimilarUsers('chris')
     expect(leastSimilarUsers[0]).toBe(undefined)
   })
+
+  afterAll(async () => {
+    raccoon.close()
+  })
 })
 
 // describe('db connections', function(){

@@ -165,4 +165,8 @@ export default class Raccoon {
   allWatchedFor(userId: string) {
     return allWatchedFor(this.client, this.config.className, userId)
   }
+
+  close() {
+    this.client.disconnect()
+  }
 }
