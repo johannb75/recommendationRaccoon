@@ -1,7 +1,13 @@
 import Config, { ConfigArgs } from './config'
 import { createClient } from './client'
 import { Redis } from 'ioredis'
-import { liked, disliked, unliked, undisliked } from './input'
+import {
+  liked,
+  disliked,
+  unliked,
+  undisliked,
+  UpdateRecsOptions
+} from './input'
 
 import {
   updateSimilarityFor,
@@ -40,19 +46,19 @@ export default class Raccoon {
     )
   }
 
-  liked(userId: string, itemId: string, options: any = {}) {
+  liked(userId: string, itemId: string, options: UpdateRecsOptions = {}) {
     return liked(this.client, this.config, userId, itemId, options)
   }
 
-  disliked(userId: string, itemId: string, options: any = {}) {
+  disliked(userId: string, itemId: string, options: UpdateRecsOptions = {}) {
     return disliked(this.client, this.config, userId, itemId, options)
   }
 
-  unliked(userId: string, itemId: string, options: any = {}) {
+  unliked(userId: string, itemId: string, options: UpdateRecsOptions = {}) {
     return unliked(this.client, this.config, userId, itemId, options)
   }
 
-  undisliked(userId: string, itemId: string, options: any = {}) {
+  undisliked(userId: string, itemId: string, options: UpdateRecsOptions = {}) {
     return undisliked(this.client, this.config, userId, itemId, options)
   }
 

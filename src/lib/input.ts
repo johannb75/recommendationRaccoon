@@ -38,15 +38,24 @@ const updateSequence = async function(
   ])
 }
 
+export type UpdateRecsOptions = {
+  updateRecs?: boolean
+}
+
+type ChangeRatingOptions = UpdateRecsOptions & {
+  removeRating?: boolean
+  liked?: boolean
+}
+
 const changeRating = async function(
   client: Redis,
   config: Config,
   userId: string,
   itemId: string,
-  options: any
+  options: ChangeRatingOptions
 ) {
   let updateRecommendations = true
-  if ('updateRecs' in options) {
+  if (options.updateRecs !== undefined) {
     updateRecommendations = !!options.updateRecs
   }
 
@@ -89,10 +98,12 @@ export const liked = function(
 
   userId: string,
   itemId: string,
-  options: any = {}
+  options: UpdateRecsOptions = {}
 ) {
-  options.liked = true
-  return changeRating(client, config, userId, itemId, options)
+  return changeRating(client, config, userId, itemId, {
+    ...options,
+    liked: true
+  })
 }
 
 export const disliked = function(
@@ -101,10 +112,12 @@ export const disliked = function(
 
   userId: string,
   itemId: string,
-  options: any = {}
+  options: UpdateRecsOptions = {}
 ) {
-  options.liked = false
-  return changeRating(client, config, userId, itemId, options)
+  return changeRating(client, config, userId, itemId, {
+    ...options,
+    liked: false
+  })
 }
 
 export const unliked = function(
@@ -113,11 +126,13 @@ export const unliked = function(
 
   userId: string,
   itemId: string,
-  options: any = {}
+  options: UpdateRecsOptions = {}
 ) {
-  options.liked = true
-  options.removeRating = true
-  return changeRating(client, config, userId, itemId, options)
+  return changeRating(client, config, userId, itemId, {
+    ...options,
+    liked: true,
+    removeRating: true
+  })
 }
 
 export const undisliked = function(
@@ -126,9 +141,11 @@ export const undisliked = function(
 
   userId: string,
   itemId: string,
-  options: any = {}
+  options: UpdateRecsOptions = {}
 ) {
-  options.liked = false
-  options.removeRating = true
-  return changeRating(client, config, userId, itemId, options)
+  return changeRating(client, config, userId, itemId, {
+    ...options,
+    liked: false,
+    removeRating: true
+  })
 }
