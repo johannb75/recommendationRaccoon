@@ -2,7 +2,7 @@
   "name": "@maruware/raccoon",
   "author": "maruware",
   "description": "A Collaborative Filtering Recommendation Engine for Node.js utilizing Redis",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/maruware/recommendationRaccoon.git"
