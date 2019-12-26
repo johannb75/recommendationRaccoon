@@ -5,7 +5,7 @@
   "version": "0.2.9",
   "repository": {
     "type": "git",
-    "url": "https://github.com/guymorita/recommendationRaccoon.git"
+    "url": "https://github.com/maruware/recommendationRaccoon.git"
   },
   "scripts": {
     "build": "npm-run-all clean tsc",
