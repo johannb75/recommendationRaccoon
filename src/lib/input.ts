@@ -1,4 +1,11 @@
-import * as Key from './key'
+import {
+  itemLikedBySetKey,
+  itemDislikedBySetKey,
+  userLikedSetKey,
+  userDislikedSetKey,
+  mostLikedKey,
+  mostDislikedKey
+} from './key'
 import client from './client'
 import * as algo from './algorithms'
 
@@ -28,14 +35,12 @@ const changeRating = async function(
   const removeRating = !!options.removeRating
 
   const feelingItemSet = options.liked
-    ? Key.itemLikedBySetKey(itemId)
-    : Key.itemDislikedBySetKey(itemId)
+    ? itemLikedBySetKey(itemId)
+    : itemDislikedBySetKey(itemId)
   const feelingUserSet = options.liked
-    ? Key.userLikedSetKey(userId)
-    : Key.userDislikedSetKey(userId)
-  const mostFeelingSet = options.liked
-    ? Key.mostLikedKey()
-    : Key.mostDislikedKey()
+    ? userLikedSetKey(userId)
+    : userDislikedSetKey(userId)
+  const mostFeelingSet = options.liked ? mostLikedKey() : mostDislikedKey()
 
   const result = await client.sismember(feelingItemSet, userId)
 
