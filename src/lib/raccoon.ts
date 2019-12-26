@@ -28,8 +28,6 @@ import {
   allWatchedFor
 } from './stat'
 
-export * from './stat'
-
 export default class Raccoon {
   config: Config
   client: Redis
