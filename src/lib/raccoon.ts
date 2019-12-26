@@ -93,7 +93,7 @@ export default class Raccoon {
     return similaritySum(this.client, simSet, compSet)
   }
 
-  updateRecommendationsFor(config: Config, userId: string) {
+  updateRecommendationsFor(userId: string) {
     return updateRecommendationsFor(
       this.client,
       this.config.className,
