@@ -62,25 +62,6 @@ export default class Raccoon {
     return undisliked(this.client, this.config, userId, itemId, options)
   }
 
-  async updateSequence(userId: string, itemId: string) {
-    // let updateWilson = true;
-    // if ('updateWilson' in options) {
-    //   updateWilson = options.updateWilson ? true : false;
-    // }
-
-    await updateSimilarityFor(this.client, this.config.className, userId)
-    return Promise.all([
-      updateWilsonScore(this.client, this.config.className, itemId),
-      updateRecommendationsFor(
-        this.client,
-        this.config.className,
-        this.config.nearestNeighbors,
-        this.config.numOfRecsStore,
-        userId
-      )
-    ])
-  }
-
   updateSimilarityFor(userId: string) {
     return updateSimilarityFor(this.client, this.config.className, userId)
   }
