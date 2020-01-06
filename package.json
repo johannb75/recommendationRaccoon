@@ -12,7 +12,8 @@
     "prepare": "npm run build",
     "clean": "rimraf dist/*",
     "tsc": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "test:cov": "jest --coverage && codecov"
   },
   "dependencies": {
     "ioredis": "^4.14.1",
