@@ -18,11 +18,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: yarn install, build, and test
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: |
         yarn install
         yarn build
         yarn test:cov
       env:
         CI: true
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
