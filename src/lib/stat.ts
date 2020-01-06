@@ -13,7 +13,7 @@ import { Redis } from 'ioredis'
 import { chunk } from 'lodash'
 
 const formatWithScoresResult = (result: string[]) => {
-  return chunk(result, 2).map(([id, score]) => {
+  return chunk(result, 2).map<[string, number]>(([id, score]) => {
     const s = parseFloat(score)
     return [id, s]
   })
