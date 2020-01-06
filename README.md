@@ -1,5 +1,8 @@
 # recommendationRaccoon (raccoon)
 
+[![codecov](https://codecov.io/gh/maruware/recommendationRaccoon/branch/master/graph/badge.svg)](https://codecov.io/gh/maruware/recommendationRaccoon)
+[![Actions Status](https://github.com/maruware/recommendationRaccoon/workflows/test/badge.svg)](https://github.com/maruware/recommendationRaccoon/actions)
+
 An easy-to-use collaborative filtering based recommendation engine and NPM module built on top of Node.js and Redis. The engine uses the Jaccard coefficient to determine the similarity between users and k-nearest-neighbors to create recommendations. This module is useful for anyone with users, a store of products/movies/items, and the desire to give their users the ability to like/dislike and receive recommendations based on similar users. Raccoon takes care of all the recommendation and rating logic. It can be paired with any database as it does not keep track of any user/item information besides a unique ID.
 
 Updated for ES6.
