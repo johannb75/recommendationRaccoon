@@ -4,7 +4,7 @@ An easy-to-use collaborative filtering based recommendation engine and NPM modul
 
 Updated for ES6.
 
-**Forked (guymorita/recommendationRaccoon)[https://github.com/guymorita/recommendationRaccoon]**
+** Forked [guymorita/recommendationRaccoon](https://github.com/guymorita/recommendationRaccoon) **
 
 ## Requirements
 
