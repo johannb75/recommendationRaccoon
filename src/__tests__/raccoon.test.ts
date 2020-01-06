@@ -8,7 +8,12 @@
 // const config = require('../dist/lib/config.js'),
 // const raccoon = require('../dist/lib/raccoon.js');
 import Raccoon from '../index'
-const raccoon = new Raccoon({ redisUrl: process.env.REDIS_HOST })
+const raccoon = new Raccoon({
+  redisUrl: process.env.REDIS_HOST,
+  redisPort: process.env.REDIS_PORT
+    ? parseInt(process.env.REDIS_PORT)
+    : undefined
+})
 
 describe('basic likes, dislikes, unlikes, and undislikes', function() {
   beforeEach(async () => {

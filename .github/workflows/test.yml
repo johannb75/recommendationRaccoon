@@ -32,3 +32,4 @@ jobs:
       env:
         CI: true
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        REDIS_PORT: ${{ job.services.redis.ports[6379] }}
