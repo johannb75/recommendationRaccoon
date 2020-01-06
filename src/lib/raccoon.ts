@@ -31,7 +31,8 @@ import {
   dislikedCount,
   allLikedFor,
   allDislikedFor,
-  allWatchedFor
+  allWatchedFor,
+  recommendForWithScores
 } from './stat'
 
 export default class Raccoon {
@@ -90,6 +91,15 @@ export default class Raccoon {
 
   recommendFor(userId: string, numberOfRecs: number) {
     return recommendFor(
+      this.client,
+      this.config.className,
+      userId,
+      numberOfRecs
+    )
+  }
+
+  recommendForWithScores(userId: string, numberOfRecs: number) {
+    return recommendForWithScores(
       this.client,
       this.config.className,
       userId,

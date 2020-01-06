@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "ioredis": "^4.14.1",
+    "lodash": "^4.17.15",
     "p-all": "^2.1.0",
     "p-map": "^3.0.0",
     "redis": "~2.6.x"
@@ -52,6 +53,7 @@
   "devDependencies": {
     "@types/ioredis": "^4.14.3",
     "@types/jest": "^24.0.25",
+    "@types/lodash": "^4.14.149",
     "@types/node": "^12.12.21",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",

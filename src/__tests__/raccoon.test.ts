@@ -106,6 +106,10 @@ describe('recommendations', function() {
   it('should recommend a movie if a similar user liked it', async () => {
     const recs = await raccoon.recommendFor('andre', 5)
     expect(recs[0]).toBe('batman')
+
+    const recWithScores = await raccoon.recommendForWithScores('andre', 5)
+    expect(recWithScores[0][0]).toBe('batman')
+    expect(recWithScores[0][1]).toBeCloseTo(-0.333)
   })
   it('should not recommend a movie if updateRecs was false', async () => {
     const recs = await raccoon.recommendFor('guy', 5)

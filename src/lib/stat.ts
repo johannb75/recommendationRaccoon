@@ -10,6 +10,14 @@ import {
   userDislikedSetKey
 } from './key'
 import { Redis } from 'ioredis'
+import { chunk } from 'lodash'
+
+const formatWithScoresResult = (result: string[]) => {
+  return chunk(result, 2).map(([id, score]) => {
+    const s = parseFloat(score)
+    return [id, s]
+  })
+}
 
 export const recommendFor = function(
   client: Redis,
@@ -23,23 +31,41 @@ export const recommendFor = function(
     numberOfRecs
   )
 }
+
+export const recommendForWithScores = async function(
+  client: Redis,
+  className: string,
+  userId: string,
+  numberOfRecs: number
+) {
+  const recs = await client.zrevrange(
+    recommendedZSetKey(className, userId),
+    0,
+    numberOfRecs,
+    'WITHSCORES'
+  )
+
+  return formatWithScoresResult(recs)
+}
+
 export const bestRated = function(client: Redis, className: string) {
   return client.zrevrange(scoreboardZSetKey(className), 0, -1)
 }
 export const worstRated = function(client: Redis, className: string) {
   return client.zrange(scoreboardZSetKey(className), 0, -1)
 }
-export const bestRatedWithScores = function(
+export const bestRatedWithScores = async function(
   client: Redis,
   className: string,
   numOfRatings: number
 ) {
-  return client.zrevrange(
+  const ratings = await client.zrevrange(
     scoreboardZSetKey(className),
     0,
     numOfRatings,
     'WITHSCORES'
   )
+  return formatWithScoresResult(ratings)
 }
 export const mostLiked = function(client: Redis, className: string) {
   return client.zrevrange(mostLikedKey(className), 0, -1)
