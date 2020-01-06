@@ -9,7 +9,6 @@
   },
   "scripts": {
     "build": "npm-run-all clean tsc",
-    "prepare": "npm run build",
     "clean": "rimraf dist/*",
     "tsc": "tsc",
     "test": "jest",
