@@ -25,7 +25,7 @@ npm install @maruware/raccoon
 Raccoon keeps track of the ratings and recommendations from your users. It does not need to store any meta data of the user or product aside from an id. To get started:
 
 ```ts
-import Raccoon from '@maruware/raccoon'
+import Raccoon from '@johannb75/raccoon'
 
 async () => {
   const raccoon = new Raccoon({
@@ -35,6 +35,8 @@ async () => {
   await raccoon.liked('garyId', 'movieId')
   await raccoon.liked('garyId', 'movie2Id')
   await raccoon.liked('chrisId', 'movieId')
+  await raccoon.removeItem('movidId')
+  await raccoon.removeUser('userId')
   const recs = await raccoon.recommendFor('chrisId', 10)
   console.log('recs', recs)
   // results will be an array of x ranked recommendations for chris
