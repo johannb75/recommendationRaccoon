@@ -17,7 +17,7 @@ Updated for ES6.
 ## Install
 
 ```bash
-npm install @maruware/raccoon
+npm install @johannb75/raccoon
 ```
 
 ## Usage
